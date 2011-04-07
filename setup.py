@@ -18,7 +18,9 @@ setup(
     author_email='yus.budiyono@gmail.com',
     url='http://www.bppt.go.id/',
     packages=['kalsel',],
- 
+    install_requires=['shapely',
+                      #'gdal'
+          ], 
     license = "GPL",
     long_description=read('README'),
     classifiers=[

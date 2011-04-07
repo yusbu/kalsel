@@ -1,29 +1,28 @@
+# -*- coding: utf-8 -*-
 import unittest
 import os
-from geonode.maps.utils import upload
+import ogr
+from shapely.wkb import loads
+from kalsel.models import calculate
 
-DATA_DIR = os.path.join(os.getcwd(), 'data') 
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data') 
 
 class KalSelTestCase(unittest.TestCase):
     def testUpload(self):
         msg = ('%s is not a directory' % DATA_DIR)
         assert os.path.isdir(DATA_DIR), msg
-
         ricefields = os.path.join(DATA_DIR, 'arahan_edited.shp')
-        
-        msg = ('%s is not a file' % ricefields)
-        assert os.path.isfile(ricefields), msg
+        boundaries = os.path.join(DATA_DIR, 'adm_kab.shp')
 
-        boundary = os.path.join(DATA_DIR, 'adm_kab.shp')
-        
-        msg = ('%s is not a file' % ricefields)
-        assert os.path.isfile(ricefields), msg
+        rice = ogr.Open(ricefields)
+        adm = ogr.Open(boundaries)
 
-        rice  = upload(ricefields)
-        adm = upload(boundary)
+        output = calculate(rice, adm)
 
-        print rice
-        print adm
+        msg = ('The calculation returned %s'  % output)
+        assert output is not None, msg
 
-        assert rice is not None
-        assert adm is not None
+if __name__ == '__main__':
+    suite = unittest.makeSuite(KalSelTestCase, 'test')
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
